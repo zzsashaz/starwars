@@ -1,18 +1,37 @@
 <template>
-  <div class="home">
-    <img alt="Vue logo" src="../assets/logo.png" />
-    <HelloWorld msg="Welcome to Your Vue.js App" />
+  <div class="container">
+    <MainSearch />
+    <CharacterCard />
+    <CharacterCard />
+    <CharacterCard />
+    <CharacterCard />
+    <CharacterCard />
+    <CharacterCard />
+    <CharacterCard />
+    <CharacterCard />
+    <CharacterCard />
+    <CharacterCard />
+    <a-pagination
+      v-model:current="current"
+      :total="50"
+      style="padding: 20px; text-align: center"
+      show-less-items
+    />
   </div>
 </template>
 
 <script>
-// @ is an alias to /src
-import HelloWorld from "@/components/HelloWorld.vue";
+import MainSearch from "@/components/MainSearch";
+import CharacterCard from "@/components/CharacterCard";
 
 export default {
   name: "Home",
-  components: {
-    HelloWorld,
+  components: { CharacterCard, MainSearch },
+  setup() {
+    return {
+      current: 2,
+    };
   },
 };
 </script>
+<style lang="scss"></style>
