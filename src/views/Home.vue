@@ -1,19 +1,25 @@
 <template>
   <div class="container">
-    <MainSearch />
-    <CharacterCard />
-    <CharacterCard />
-    <CharacterCard />
-    <CharacterCard />
-    <CharacterCard />
-    <CharacterCard />
-    <CharacterCard />
-    <CharacterCard />
-    <CharacterCard />
-    <CharacterCard />
+    <a-input-search
+      v-model:value="searchValue"
+      placeholder="Введите имя вашего героя"
+      enter-button
+      @search="search"
+      style="margin: 25px 0"
+    />
+    <CharacterCard
+      v-for="el in characters"
+      :key="el.key"
+      :CharID="Number(el.url.split('/').reverse()[1])"
+      :CharName="el.name"
+      :HomeWorld="el.homeworld"
+    />
+    <h1 v-if="!charactersCount" class="thereIsNothingHere">
+      По вашему запросу ничего не найдено
+    </h1>
     <a-pagination
-      v-model:current="current"
-      :total="50"
+      v-model:current="currentPage"
+      :total="charactersCount"
       style="padding: 20px; text-align: center"
       show-less-items
     />
@@ -21,17 +27,51 @@
 </template>
 
 <script>
-import MainSearch from "@/components/MainSearch";
 import CharacterCard from "@/components/CharacterCard";
+import { searchCharacters, getCharacters } from "@/hooks/main";
 
 export default {
   name: "Home",
-  components: { CharacterCard, MainSearch },
-  setup() {
+  components: { CharacterCard },
+  data() {
     return {
-      current: 2,
+      searchValue: "",
+      currentPage: 1,
+      charactersCount: 0,
+      characters: [],
     };
+  },
+  methods: {
+    async search() {
+      const SearchCharactersData = await searchCharacters(this.searchValue);
+      this.charactersCount = SearchCharactersData.count;
+      this.characters = SearchCharactersData.results;
+    },
+    async CharacterRefresh() {
+      const AllCharactersData = await getCharacters(this.currentPage);
+      this.charactersCount = AllCharactersData.count;
+      this.characters = AllCharactersData.results;
+    },
+    handleMenuClick(e) {
+      console.log("click", e);
+    },
+  },
+  async created() {
+    await this.CharacterRefresh();
+  },
+  watch: {
+    async currentPage() {
+      await this.CharacterRefresh();
+    },
+    async searchValue() {
+      await this.search();
+    },
   },
 };
 </script>
-<style lang="scss"></style>
+<style lang="scss">
+.thereIsNothingHere {
+  text-align: center;
+  color: red;
+}
+</style>
