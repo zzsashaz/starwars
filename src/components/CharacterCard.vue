@@ -48,6 +48,9 @@ export default {
   async updated() {
     this.CharBorn = await getHomeworld(this.HomeWorld.split("/").reverse()[1]);
     console.log(this.CharBorn);
+    this.isLiked = JSON.parse(window.localStorage.getItem("liked")).find(
+      (el) => el.name === this.CharName
+    );
   },
   async mounted() {
     this.CharBorn = await getHomeworld(this.HomeWorld.split("/").reverse()[1]);
