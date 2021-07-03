@@ -1,6 +1,10 @@
 .container {
   max-width: 1320px;
   margin: 0 auto;
+  padding: 0 15px;
+}
+.center {
+  text-align: center;
 }
 
 @media (max-width: 1399px) {
@@ -18,12 +22,6 @@
 @media (max-width: 991px) {
   .container {
     max-width: 720px;
-  }
-}
-
-@media (max-width: 767px) {
-  .container {
-    max-width: 540px;
   }
 }
 

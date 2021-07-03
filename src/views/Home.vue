@@ -1,21 +1,23 @@
 <template>
-  <div class="container">
+  <div class="container center">
     <a-input-search
       v-model:value="searchValue"
       placeholder="Введите имя вашего героя"
-      enter-button
       @search="search"
-      style="margin: 25px 0"
+      class="search"
     />
     <CharacterCard
       v-for="el in characters"
-      :key="el.key"
+      :key="el.name"
       :CharID="Number(el.url.split('/').reverse()[1])"
       :CharName="el.name"
       :HomeWorld="el.homeworld"
     />
     <h1 v-if="!charactersCount" class="thereIsNothingHere">
-      По вашему запросу ничего не найдено
+      <a-spin v-if="isPageLoading" size="large"></a-spin>
+      <template v-if="!isPageLoading"
+        >По вашему запросу ничего не найдено</template
+      >
     </h1>
     <a-pagination
       v-model:current="currentPage"
@@ -39,6 +41,7 @@ export default {
       currentPage: 1,
       charactersCount: 0,
       characters: [],
+      isPageLoading: true,
     };
   },
   methods: {
@@ -48,16 +51,18 @@ export default {
       this.characters = SearchCharactersData.results;
     },
     async CharacterRefresh() {
+      this.characters = [];
+      this.isPageLoading = true;
+      this.charactersCount = 0;
       const AllCharactersData = await getCharacters(this.currentPage);
       this.charactersCount = AllCharactersData.count;
       this.characters = AllCharactersData.results;
-    },
-    handleMenuClick(e) {
-      console.log("click", e);
+      this.isPageLoading = false;
     },
   },
   async created() {
     await this.CharacterRefresh();
+    this.isPageLoading = false;
   },
   watch: {
     async currentPage() {
@@ -73,5 +78,23 @@ export default {
 .thereIsNothingHere {
   text-align: center;
   color: red;
+}
+.search {
+  margin: 25px 0;
+}
+@media (max-width: 767px) {
+  .nav {
+    position: sticky;
+    top: 0px;
+    padding: 10px 0 50px 0;
+    z-index: 100;
+    background: #fff;
+  }
+  .search {
+    position: sticky;
+    top: 55px;
+    background: #fff;
+    z-index: 100;
+  }
 }
 </style>

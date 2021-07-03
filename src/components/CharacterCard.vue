@@ -1,5 +1,5 @@
 <template>
-  <a-card style="width: calc(20% - 20px); display: inline-block; margin: 10px">
+  <a-card class="character-card-body">
     <template #cover>
       <img
         alt="Photo"
@@ -7,7 +7,22 @@
       />
     </template>
     <h1 class="character-name">{{ CharName }}</h1>
-    <h3 class="character-born">{{ CharBorn }}</h3>
+    <h3
+      v-if="!isHomeworldLoading"
+      @click="showHomeworld"
+      class="character-born-get"
+    >
+      Узнать место рождения
+    </h3>
+    <div class="center">
+      <a-spin
+        style="height: 33px"
+        v-if="isHomeworldLoading && !isHomeworldShown"
+      />
+    </div>
+    <h3 v-if="isHomeworldShown" class="character-born">
+      {{ CharBorn }}
+    </h3>
     <div class="like-area">
       <HeartOutlined
         v-if="!isLiked"
@@ -43,17 +58,15 @@ export default {
     return {
       isLiked: false,
       CharBorn: "",
+      isHomeworldShown: false,
+      isHomeworldLoading: false,
     };
   },
-  async updated() {
-    this.CharBorn = await getHomeworld(this.HomeWorld.split("/").reverse()[1]);
-    console.log(this.CharBorn);
-  },
   async mounted() {
-    this.CharBorn = await getHomeworld(this.HomeWorld.split("/").reverse()[1]);
-    this.isLiked = JSON.parse(window.localStorage.getItem("liked")).find(
-      (el) => el.name === this.CharName
-    );
+    const likedData = JSON.parse(window.localStorage.getItem("liked"));
+    if (likedData) {
+      this.isLiked = likedData.find((el) => el.name === this.CharName);
+    }
   },
   methods: {
     changeLike() {
@@ -71,13 +84,24 @@ export default {
       }
       this.isLiked = !this.isLiked;
       localStorage.setItem("liked", JSON.stringify(likedCharacters));
-      console.log(localStorage.getItem("liked"));
+    },
+    async showHomeworld() {
+      this.isHomeworldLoading = true;
+      this.CharBorn = await getHomeworld(
+        this.HomeWorld.split("/").reverse()[1]
+      );
+      this.isHomeworldShown = true;
     },
   },
 };
 </script>
 
 <style scoped lang="scss">
+.character-card-body {
+  width: calc(20% - 20px);
+  display: inline-block;
+  margin: 10px;
+}
 .like-area {
   display: flex;
   width: 100%;
@@ -92,5 +116,31 @@ export default {
 }
 .character-born {
   text-align: center;
+  color: blue;
+}
+.character-born-get {
+  cursor: pointer;
+  text-align: center;
+  color: red;
+}
+@media (max-width: 1399px) {
+  .character-card-body {
+    width: calc(25% - 20px);
+  }
+}
+@media (max-width: 1199px) {
+  .character-card-body {
+    width: calc(33.3% - 20px);
+  }
+}
+@media (max-width: 991px) {
+  .character-card-body {
+    width: calc(50% - 20px);
+  }
+}
+@media (max-width: 767px) {
+  .character-card-body {
+    width: calc(100% - 20px);
+  }
 }
 </style>
