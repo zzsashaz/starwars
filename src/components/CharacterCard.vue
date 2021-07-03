@@ -41,6 +41,7 @@
 <script>
 import { HeartOutlined, HeartFilled } from "@ant-design/icons-vue";
 import { getHomeworld } from "@/hooks/main";
+import { message } from "ant-design-vue";
 
 export default {
   name: "CharacterCard",
@@ -74,12 +75,14 @@ export default {
         data = [];
       }
       if (!this.isLiked) {
+        message.success("Персонаж успешно добавлен в Любимое");
         data.push({
           name: this.CharName,
           charID: this.CharID,
           homeland: this.HomeWorld,
         });
       } else {
+        message.warn("Персонаж удалён из Любимого и грустит:(");
         let idToDelete = data.findIndex((char) => char.name === this.CharName);
         data.splice(idToDelete, 1);
       }
@@ -113,7 +116,7 @@ export default {
 }
 .character-name {
   text-align: center;
-  font-size: 20px;
+  font-size: 19px;
 }
 .character-born {
   text-align: center;

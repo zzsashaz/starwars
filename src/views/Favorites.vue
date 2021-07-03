@@ -8,10 +8,14 @@
       :HomeWorld="el.homeland"
     />
     <div class="localstorage-clear">
-      <h1 v-if="!likedCharacters" class="thereIsNothingHere">
+      <h1 v-if="!likedCharacters?.length" class="thereIsNothingHere">
         У вас нет ни одного любимого персонажа!
       </h1>
-      <a-button @click="clearStorage" v-if="likedCharacters" type="primary"
+      <a-button
+        @click="clearStorage"
+        v-if="likedCharacters?.length"
+        type="primary"
+        style="margin: 25px 0"
         >Отчистить избранное</a-button
       >
     </div>
