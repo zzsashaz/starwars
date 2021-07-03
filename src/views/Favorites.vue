@@ -8,6 +8,9 @@
       :HomeWorld="el.homeland"
     />
     <div class="localstorage-clear">
+      <h1 v-if="!likedCharacters" class="thereIsNothingHere">
+        У вас нет ни одного любимого персонажа!
+      </h1>
       <a-button @click="clearStorage" v-if="likedCharacters" type="primary"
         >Отчистить избранное</a-button
       >
@@ -36,5 +39,9 @@ export default {
 <style lang="scss">
 .localstorage-clear {
   text-align: center;
+}
+.thereIsNothingHere {
+  text-align: center;
+  color: red;
 }
 </style>
