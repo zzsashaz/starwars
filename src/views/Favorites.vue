@@ -1,10 +1,40 @@
 <template>
-  <div class="container"></div>
+  <div class="container center">
+    <CharacterCard
+      v-for="el in likedCharacters"
+      :key="el.name"
+      :CharID="el.charID"
+      :CharName="el.name"
+      :HomeWorld="el.homeland"
+    />
+    <div class="localstorage-clear">
+      <a-button @click="clearStorage" v-if="likedCharacters" type="primary"
+        >Отчистить избранное</a-button
+      >
+    </div>
+  </div>
 </template>
 
 <script>
+import CharacterCard from "@/components/CharacterCard";
 export default {
   name: "Home",
+  components: { CharacterCard },
+  data() {
+    return {
+      likedCharacters: JSON.parse(window.localStorage.getItem("liked")),
+    };
+  },
+  methods: {
+    clearStorage() {
+      window.localStorage.clear();
+      this.likedCharacters = JSON.parse(window.localStorage.getItem("liked"));
+    },
+  },
 };
 </script>
-<style lang="scss"></style>
+<style lang="scss">
+.localstorage-clear {
+  text-align: center;
+}
+</style>

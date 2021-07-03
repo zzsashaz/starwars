@@ -1,19 +1,27 @@
 <template>
-  <div class="container">
-    <MainSearch />
-    <CharacterCard />
-    <CharacterCard />
-    <CharacterCard />
-    <CharacterCard />
-    <CharacterCard />
-    <CharacterCard />
-    <CharacterCard />
-    <CharacterCard />
-    <CharacterCard />
-    <CharacterCard />
+  <div class="container center">
+    <a-input-search
+      v-model:value="searchValue"
+      placeholder="Введите имя вашего героя"
+      @search="search"
+      class="search"
+    />
+    <CharacterCard
+      v-for="el in characters"
+      :key="el.name"
+      :CharID="Number(el.url.split('/').reverse()[1])"
+      :CharName="el.name"
+      :HomeWorld="el.homeworld"
+    />
+    <h1 v-if="!charactersCount" class="thereIsNothingHere">
+      <a-spin v-if="isPageLoading" size="large"></a-spin>
+      <template v-if="!isPageLoading"
+        >По вашему запросу ничего не найдено</template
+      >
+    </h1>
     <a-pagination
-      v-model:current="current"
-      :total="50"
+      v-model:current="currentPage"
+      :total="charactersCount"
       style="padding: 20px; text-align: center"
       show-less-items
     />
@@ -21,17 +29,72 @@
 </template>
 
 <script>
-import MainSearch from "@/components/MainSearch";
 import CharacterCard from "@/components/CharacterCard";
+import { searchCharacters, getCharacters } from "@/hooks/main";
 
 export default {
   name: "Home",
-  components: { CharacterCard, MainSearch },
-  setup() {
+  components: { CharacterCard },
+  data() {
     return {
-      current: 2,
+      searchValue: "",
+      currentPage: 1,
+      charactersCount: 0,
+      characters: [],
+      isPageLoading: true,
     };
+  },
+  methods: {
+    async search() {
+      const SearchCharactersData = await searchCharacters(this.searchValue);
+      this.charactersCount = SearchCharactersData.count;
+      this.characters = SearchCharactersData.results;
+    },
+    async CharacterRefresh() {
+      this.characters = [];
+      this.isPageLoading = true;
+      this.charactersCount = 0;
+      const AllCharactersData = await getCharacters(this.currentPage);
+      this.charactersCount = AllCharactersData.count;
+      this.characters = AllCharactersData.results;
+      this.isPageLoading = false;
+    },
+  },
+  async created() {
+    await this.CharacterRefresh();
+    this.isPageLoading = false;
+  },
+  watch: {
+    async currentPage() {
+      await this.CharacterRefresh();
+    },
+    async searchValue() {
+      await this.search();
+    },
   },
 };
 </script>
-<style lang="scss"></style>
+<style lang="scss">
+.thereIsNothingHere {
+  text-align: center;
+  color: red;
+}
+.search {
+  margin: 25px 0;
+}
+@media (max-width: 767px) {
+  .nav {
+    position: sticky;
+    top: 0px;
+    padding: 10px 0 50px 0;
+    z-index: 100;
+    background: #fff;
+  }
+  .search {
+    position: sticky;
+    top: 55px;
+    background: #fff;
+    z-index: 100;
+  }
+}
+</style>
