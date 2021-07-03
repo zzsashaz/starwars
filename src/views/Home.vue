@@ -51,9 +51,13 @@ export default {
       this.characters = SearchCharactersData.results;
     },
     async CharacterRefresh() {
+      this.characters = [];
+      this.isPageLoading = true;
+      this.charactersCount = 0;
       const AllCharactersData = await getCharacters(this.currentPage);
       this.charactersCount = AllCharactersData.count;
       this.characters = AllCharactersData.results;
+      this.isPageLoading = false;
     },
   },
   async created() {
