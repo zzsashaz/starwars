@@ -41,7 +41,6 @@
 <script>
 import { HeartOutlined, HeartFilled } from "@ant-design/icons-vue";
 import { getHomeworld } from "@/hooks/main";
-import { likedCharacters } from "@/store";
 
 export default {
   name: "CharacterCard",
@@ -70,20 +69,22 @@ export default {
   },
   methods: {
     changeLike() {
+      let data = JSON.parse(window.localStorage.getItem("liked"));
+      if (!data) {
+        data = [];
+      }
       if (!this.isLiked) {
-        likedCharacters.push({
+        data.push({
           name: this.CharName,
           charID: this.CharID,
           homeland: this.HomeWorld,
         });
       } else {
-        let idToDelete = likedCharacters.findIndex(
-          (char) => char.name === this.CharName
-        );
-        likedCharacters.splice(idToDelete, 1);
+        let idToDelete = data.findIndex((char) => char.name === this.CharName);
+        data.splice(idToDelete, 1);
       }
       this.isLiked = !this.isLiked;
-      localStorage.setItem("liked", JSON.stringify(likedCharacters));
+      localStorage.setItem("liked", JSON.stringify(data));
     },
     async showHomeworld() {
       this.isHomeworldLoading = true;
